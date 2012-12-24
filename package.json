@@ -1,0 +1,31 @@
+{
+  "name": "level-namespace",
+  "version": "0.0.0",
+  "description": "namespaces for levelup",
+  "main": "namespace.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "levelup": "~0.4.1",
+    "rimraf": "~2.1.1",
+    "through": "~2.1.0"
+  },
+  "devDependencies": {
+    "tap": "~0.3.3"
+  },
+  "scripts": {
+    "test": "tap test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kesla/level-namespace.git"
+  },
+  "keywords": [
+    "leveldb",
+    "levelup"
+  ],
+  "author": "David Björklund <david.bjorklund@gmail.com>",
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}
