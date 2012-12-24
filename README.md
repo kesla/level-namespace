@@ -1,4 +1,4 @@
-# level-namespace
+# level-namespace[![build status](https://secure.travis-ci.org/kesla/level-namespace.png)](http://travis-ci.org/kesla/level-namespace)
 namespaces for levelup
 
 ## Usage/demo
