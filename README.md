@@ -25,9 +25,9 @@ namespace.put('foo', 'bar', function(err) {
 
 db.batch([
         { type: 'put', key: 'foo', value: 'baz' },
-        { type: 'put', key: 'read-stream-test:foo', value: 'bar' },
-        { type: 'put', key: 'read-stream-test:hello', value: 'world' },
-        { type: 'put', key: 'read-stream-test;hello', value: 'worldz' }
+        { type: 'put', key: 'example:foo', value: 'bar' },
+        { type: 'put', key: 'example:hello', value: 'world' },
+        { type: 'put', key: 'example;hello', value: 'worldz' }
     ], function() {
         // will print
         // 'bar' and then 'world' to process.stdout
