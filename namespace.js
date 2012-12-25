@@ -20,68 +20,80 @@ function copy(obj) {
     }, start);
 }
 
-NamespaceDB.prototype.put = function(key, value, callback) {
-    this.db.put(this.name + ':' + key, value, callback);
+NamespaceDB.prototype._callFunc = function(name, args) {
+    // replace the key with the namespaced key
+    args[0] = this.name + ':' + args[0];
+    this.db[name].apply(this.db, args);
 }
 
-NamespaceDB.prototype.get = function(key, callback) {
-    this.db.get(this.name + ':' + key, callback);
+NamespaceDB.prototype.put = function() {
+    this._callFunc('put', arguments);
 }
 
-NamespaceDB.prototype.del = function(key, callback) {
-    this.db.del(this.name + ':' + key, callback);
+NamespaceDB.prototype.get = function() {
+    this._callFunc('get', arguments);
 }
 
-NamespaceDB.prototype.batch = function(batch, callback) {
+NamespaceDB.prototype.del = function() {
+    this._callFunc('del', arguments);
+}
+
+NamespaceDB.prototype.batch = function() {
     var self = this;
-    batch = copy(batch);
+    batch = copy(arguments[0]);
     batch.forEach(function(row) {
         row.key = self.name + ':' + row.key;
     });
-    this.db.batch(batch, callback);
+    arguments[0] = batch;
+    this.db.batch.apply(this.db, arguments);
 }
 
-NamespaceDB.prototype.keyStream = function() {
+NamespaceDB.prototype.keyStream = function(_opts) {
+    var opts = copy(_opts || {});
+    opts.keys = true;
+    opts.values = false;
+    return this.readStream(opts);
+}
+
+NamespaceDB.prototype.valueStream = function(_opts) {
+    var opts = copy(_opts || {});
+    opts.keys = false;
+    opts.values = true;
+    return this.readStream(opts);
+}
+
+NamespaceDB.prototype.readStream = function(opts) {
+    var opts = copy(opts || {});
+
+    opts.start = this.name + ':' + (opts.start? opts.start : '');
+
     var self = this;
-    var opts = {
-        start: this.name + ':',
-        end: this.name + ';',
-        keys: true,
-        values: false
-    }
-    var stream = through(function write(row) {
-        this.queue(row.slice(self.name.length + 1));
-    });
-    this.db.readStream(opts).pipe(stream);
-    return stream;
-}
+    var keys = opts.keys === undefined ? true : opts.keys;
+    if (opts.values === undefined) opts.values = true;
+    // need key to filter on
+    opts.keys = true;
 
-NamespaceDB.prototype.valueStream = function() {
-    var opts = {
-        start: this.name + ':',
-        end: this.name + ';',
-        keys: false,
-        values: true
-    }
-    // pipe to through so that the stream does pause and resume properly
-    var stream = through();
-    this.db.readStream(opts).pipe(stream);
-    return stream;
-}
-
-NamespaceDB.prototype.readStream = function() {
-    var self = this;
-    var opts = {
-        start: this.name + ':',
-        end: this.name + ';',
-        key: true,
-        value: true
-    };
+    var readStream = this.db.readStream(opts);
     var stream = through(function write(row) {
-        row.key = row.key.slice(self.name.length + 1)
+        var key = row.key || row;
+        if (key.slice(0, self.name.length + 1) !== self.name + ':') {
+            readStream.destroy();
+            this.queue(null);
+            return;
+        }
+ 
+        if (opts.values) {
+            if (!keys) {
+                row = row.value;
+            } else {
+                row.key = row.key.slice(self.name.length + 1);
+            }
+        } else {
+            row = row.slice(self.name.length + 1);
+        }
         this.queue(row);
     });
-    this.db.readStream(opts).pipe(stream);
+    readStream.pipe(stream);
     return stream;
 }
 
