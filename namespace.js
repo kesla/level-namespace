@@ -2,7 +2,7 @@ var through = require('through');
 
 var NamespaceDB = function(db, name) {
     this.db = db;
-    this.name = name;
+    this.name = encodeURIComponent(name);
 };
 
 function isObj(value) {
