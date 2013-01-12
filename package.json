@@ -7,10 +7,10 @@
     "test": "test"
   },
   "dependencies": {
-    "levelup": "~0.4.1",
     "through": "~2.1.0"
   },
   "devDependencies": {
+    "levelup": "~0.5.1",
     "rimraf": "~2.1.1",
     "tap": "~0.3.3"
   },
