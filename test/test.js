@@ -247,12 +247,12 @@ test('level-namespace', function(t) {
         var space = db.namespace('write-stream-test');
         var stream = space.writeStream();
         stream.once('close', function() {
-            process.nextTick(function() {
+            setTimeout(function() {
                 db.get('write-stream-test:hello', function(err, value) {
                     t.equal(err, null);
                     t.equal(value, 'world');
                 });
-            });
+            }, 100  );
         });
         stream.write({ key: 'hello', value: 'world' })
         stream.write({ key: 'foo', value: 'bar'})
