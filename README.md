@@ -1,3 +1,7 @@
+#DEPRECATED
+
+Yo! [level-sublevel](https://github.com/dominictarr/level-sublevel) is much more capable than this, so use that instead!
+
 # level-namespace[![build status](https://secure.travis-ci.org/kesla/level-namespace.png)](http://travis-ci.org/kesla/level-namespace)
 namespaces for levelup
 
